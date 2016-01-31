@@ -18,6 +18,7 @@ class InstancesApplication {
 
 	public function new() {
 		instancesCollection = new Instances('cylinder',10,10);
+		//instancesCollection = new Instances('grass',10,10);
     }
 
 	public function render(frame: Framebuffer) {
