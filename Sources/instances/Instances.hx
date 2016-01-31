@@ -9,6 +9,7 @@ import kha.math.Vector4;
 import kha.Scheduler;
 import kha.Shaders;
 import kha.Assets;
+import kha.graphics4.ConstantLocation;
 import kha.graphics4.CompareMode;
 import kha.graphics4.FragmentShader;
 import kha.graphics4.IndexBuffer;
@@ -19,6 +20,8 @@ import kha.graphics4.VertexData;
 import kha.graphics4.VertexShader;
 import kha.graphics4.VertexStructure;
 import kha.math.Matrix4;
+import kha.math.FastMatrix4;
+import kha.math.FastVector3;
 
 class Instances {
 
@@ -26,10 +29,13 @@ class Instances {
 	static var instancesZ : Int = 100;
 
 	var cameraStart : Vector4;
-	var view : Matrix4;
-	var projection : Matrix4;
-	var mvp : Matrix4;
+	var view : FastMatrix4;
+	var projection : FastMatrix4;
+	var mvp : FastMatrix4;
+	var mvp2 : FastMatrix4;
 	
+	var mvpID:ConstantLocation;
+
 	var ins : Array<Dynamic>;
 	
 	var vertexBuffers: Array<VertexBuffer>;
@@ -51,14 +57,17 @@ class Instances {
 				switch (type) {
 					case 'cylinder':
 						ins.push(new Cylinder(pos));
+					case 'grass' :
+						ins.push(new GrassPatch(pos));
 				}
 			}
 		}
 	}
 
-	public function createMesh(type : String) {
+	public function createMesh(type : String) : Dynamic {
 		return switch (type) {
 			case 'cylinder': new CylinderMesh(32);
+			case 'grass' : new GrassMesh();
 			case _: null;
 		}
 	}
@@ -141,22 +150,112 @@ class Instances {
 		return structures;
 	}
 
+
+	public function fillStructure2(mesh : Dynamic) :  Array<VertexStructure> {
+	
+
+		var structures = new Array<VertexStructure>();
+			
+		structures[0] = new VertexStructure();
+        structures[0].add("pos", VertexData.Float3);
+        structures[0].add("uv", VertexData.Float2);
+        structures[0].add("nor", VertexData.Float3);
+        // Save length - we store position, uv and normal data
+        var structureLength = 8;
+
+
+	
+		// Vertex buffer
+		vertexBuffers = new Array();
+		vertexBuffers[0] = new VertexBuffer(
+			Std.int(mesh.vertices.length / structureLength),
+			structures[0],
+			Usage.StaticUsage
+		);
+		
+		var vbData = vertexBuffers[0].lock();
+		for (i in 0...vbData.length) {
+			vbData.set(i, mesh.vertices[i]);
+		}
+		vertexBuffers[0].unlock();
+		
+		// Index buffer
+		indexBuffer = new IndexBuffer(
+			mesh.indices.length,
+			Usage.StaticUsage
+		);
+		
+		var iData = indexBuffer.lock();
+		for (i in 0...iData.length) {
+			iData[i] = mesh.indices[i];
+		}
+		indexBuffer.unlock();
+		
+		// Color structure, is different for each instance
+		structures[1] = new VertexStructure();
+        structures[1].add("col", VertexData.Float3);
+		
+		vertexBuffers[1] = new VertexBuffer(
+			ins.length,
+			structures[1],
+			Usage.StaticUsage,
+			1 // changed after every instance, use i higher number for repetitions
+		);
+		
+		var oData = vertexBuffers[1].lock();
+		for (i in 0...ins.length) {
+			oData.set(i * 3, 0.3);
+			oData.set(i * 3 + 1, 0.75 + Random.getIn(-100, 100) / 500);
+			oData.set(i * 3 + 2, 0.3);
+		}
+		vertexBuffers[1].unlock();
+		
+		// Transformation matrix, is different for each instance
+		structures[2] = new VertexStructure();
+		structures[2].add("m", VertexData.Float4x4);
+		vertexBuffers[2] = new VertexBuffer(
+			ins.length,
+			structures[2],
+			Usage.StaticUsage,
+			1 
+		);
+
+		return structures;
+	}
 	public function new(type : String, iX = 100, iZ = 100) {
 
 		createInstances(type, iX, iZ);
 
 		cameraStart = new Vector4(0, 5, 10);
-		projection = Matrix4.perspectiveProjection(45.0, 4.0 / 3.0, 0.1, 100.0);
+		projection = FastMatrix4.perspectiveProjection(45.0, 4.0 / 3.0, 0.1, 100.0);
 		
-		var mesh = createMesh(type);
+		var mesh:Dynamic = createMesh(type);
 		
-		var structures = fillStructure(mesh);
 		
 		switch (type) {
 			case 'cylinder': {
 				var f =  Shaders.cylinder_frag;
 				var v = Shaders.cylinder_vert;				
+				var structures = fillStructure(mesh);
 				setupPipeline(structures, f, v);
+			}
+			case 'grass': {
+				var f =  Shaders.cylinder_frag;
+				var v = Shaders.cylinder_vert;				
+				var structures = fillStructure2(mesh);
+				setupPipeline(structures, f, v);
+				mvpID = pipeline.getConstantLocation("MVP");
+
+				var model = FastMatrix4.identity();
+
+				mvp2 = FastMatrix4.identity();
+				if (projection !=null)
+					mvp2 = mvp2.multmat(projection);
+				if (view !=null)
+					mvp2 = mvp2.multmat(view);
+				if (model !=null)
+					mvp2 = mvp2.multmat(model);
+
 			}
 			case _: null;
 		}
@@ -169,12 +268,12 @@ class Instances {
 		
 		// Move camera and update view matrix
 		var newCameraPos = Matrix4.rotationY(Scheduler.time() / 4).multvec(cameraStart);
-		view = Matrix4.lookAt(new Vector3(newCameraPos.x, newCameraPos.y, newCameraPos.z), // Position in World Space
-			new Vector3(0, 0, 0), // Looks at the origin
-			new Vector3(0, 1, 0) // Up-vector
+		view = FastMatrix4.lookAt(new FastVector3(newCameraPos.x, newCameraPos.y, newCameraPos.z), // Position in World Space
+			new FastVector3(0, 0, 0), // Looks at the origin
+			new FastVector3(0, 1, 0) // Up-vector
 		);
 		
-		var vp = Matrix4.identity();
+		var vp = FastMatrix4.identity();
 		vp = vp.multmat(projection);
 		vp = vp.multmat(view);
 		
@@ -206,13 +305,14 @@ class Instances {
 		vertexBuffers[2].unlock();
 		
         g.begin();
-		g.clear(Color.fromFloats(1, 0.75, 0));
+		g.clear(Color.fromFloats(0, 0, 0));
 		g.setPipeline(pipeline);
 		
 		// Instanced rendering
-		if (g.instancedRenderingAvailable()) {
+		if (mvpID!=null) {
 			g.setVertexBuffers(vertexBuffers);
 			g.setIndexBuffer(indexBuffer);
+			g.setMatrix(mvpID, mvp2);
 			g.drawIndexedVerticesInstanced(ins.length);
 		}
 		
