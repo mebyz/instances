@@ -14,7 +14,7 @@ class GrassPatch {
 	}
 	
 	public function getModelMatrix() : Matrix4 {
-		return Matrix4.translation(position.x, position.y, position.z);
+		return Matrix4.translation(position.x, position.y+yOffset, position.z);
 	}
 	
 	public function update() {
