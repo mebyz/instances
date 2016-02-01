@@ -29,6 +29,7 @@ class Instances {
 	static var instancesZ : Int = 100;
 
 	var cameraStart : Vector4;
+	var model : FastMatrix4;
 	var view : FastMatrix4;
 	var projection : FastMatrix4;
 	var mvp : FastMatrix4;
@@ -222,12 +223,16 @@ class Instances {
 
 		return structures;
 	}
-	public function new(type : String, iX = 100, iZ = 100) {
+	public function new(type : String, iX = 100, iZ = 100, m = null, vv= null, p = null, imvp = null) {
 
 		createInstances(type, iX, iZ);
 
+
 		cameraStart = new Vector4(0, 5, 10);
-		projection = FastMatrix4.perspectiveProjection(45.0, 4.0 / 3.0, 0.1, 100.0);
+		if (p != null)
+			projection = p;
+		else
+			projection = FastMatrix4.perspectiveProjection(45.0, 4.0 / 3.0, 0.1, 100.0);
 		
 		var mesh:Dynamic = createMesh(type);
 		
@@ -246,7 +251,14 @@ class Instances {
 				setupPipeline(structures, f, v);
 				mvpID = pipeline.getConstantLocation("MVP");
 
-				var model = FastMatrix4.identity();
+				var model = null;
+				if (m !=null)
+					model= m;
+				else
+					model = FastMatrix4.identity();
+
+				if (vv !=null)
+					view= vv;
 
 				mvp2 = FastMatrix4.identity();
 				if (projection !=null)
@@ -262,21 +274,27 @@ class Instances {
 
 	}
 
-	public function render(frame : Framebuffer) {
+	public function render(frame : Framebuffer,m,v,p) {
 		
 		var g = frame.g4;
 		
 		// Move camera and update view matrix
-		var newCameraPos = Matrix4.rotationY(Scheduler.time() / 4).multvec(cameraStart);
+		/*var newCameraPos = cameraStart;//Matrix4.rotationY(Scheduler.time() / 4).multvec(cameraStart);
 		view = FastMatrix4.lookAt(new FastVector3(newCameraPos.x, newCameraPos.y, newCameraPos.z), // Position in World Space
 			new FastVector3(0, 0, 0), // Looks at the origin
 			new FastVector3(0, 1, 0) // Up-vector
 		);
+		*/
 		
 		var vp = FastMatrix4.identity();
-		vp = vp.multmat(projection);
-		vp = vp.multmat(view);
-		
+		vp = vp.multmat(p);
+		vp = vp.multmat(v);
+
+		mvp2 = FastMatrix4.identity();
+					mvp2 = mvp2.multmat(p);
+					mvp2 = mvp2.multmat(v);
+					mvp2 = mvp2.multmat(m);
+
 		// Fill transformation matrix buffer with values from each instance
 		var mData = vertexBuffers[2].lock();
 		for (i in 0...ins.length) {
@@ -304,8 +322,8 @@ class Instances {
 		}		
 		vertexBuffers[2].unlock();
 		
-        g.begin();
-		g.clear(Color.fromFloats(0, 0, 0));
+        //g.begin();
+		//g.clear(Color.fromFloats(0, 0, 0));
 		g.setPipeline(pipeline);
 		
 		// Instanced rendering
