@@ -8,12 +8,13 @@ attribute vec3 pos;
 
 // Instanced input data (different for each instance but the same for each vertex of an instance)
 attribute vec3 col;
-attribute mat4 m;
+uniform mat4 MVP;
+
 
 // Output data - will be interpolated for each fragment
 //out vec3 fragmentColor;
 
 void main() {
-	gl_Position = m * vec4(pos, 1.0);
+	gl_Position = MVP * vec4(pos, 1.0);
 	//fragmentColor = col;
 }

@@ -249,7 +249,7 @@ class Instances {
 				var v = Shaders.cylinder_vert;				
 				var structures = fillStructure2(mesh);
 				setupPipeline(structures, f, v);
-				mvpID = pipeline.getConstantLocation("MVP");
+				//mvpID = pipeline.getConstantLocation("MVP");
 
 				var model = null;
 				if (m !=null)
