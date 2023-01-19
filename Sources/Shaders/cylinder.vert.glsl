@@ -1,3 +1,4 @@
+#version 330
 #ifdef GL_ES
 precision mediump float;
 #endif
@@ -10,9 +11,9 @@ attribute vec3 col;
 attribute mat4 m;
 
 // Output data - will be interpolated for each fragment
-varying vec3 fragmentColor;
+//out vec3 fragmentColor;
 
-void kore() {
+void main() {
 	gl_Position = m * vec4(pos, 1.0);
-	fragmentColor = col;
+	//fragmentColor = col;
 }
