@@ -1,18 +1,18 @@
-#ifdef GL_ES
+#version 320 es
 precision mediump float;
-#endif
 
 // Input vertex data, different for all executions of this shader
-attribute vec3 pos;
+in vec3 pos;
 
 // Instanced input data (different for each instance but the same for each vertex of an instance)
-attribute vec3 col;
-attribute mat4 m;
+in vec3 col;
+uniform mat4 MVP;
+
 
 // Output data - will be interpolated for each fragment
-varying vec3 fragmentColor;
+//out vec3 fragmentColor;
 
-void kore() {
-	gl_Position = m * vec4(pos, 1.0);
-	fragmentColor = col;
+void main() {
+	gl_Position = MVP * vec4(pos, 1.0);
+	//fragmentColor = col;
 }

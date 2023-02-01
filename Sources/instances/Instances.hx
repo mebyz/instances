@@ -249,7 +249,7 @@ class Instances {
 				var v = Shaders.cylinder_vert;				
 				var structures = fillStructure2(mesh);
 				setupPipeline(structures, f, v);
-				mvpID = pipeline.getConstantLocation("MVP");
+				//mvpID = pipeline.getConstantLocation("MVP");
 
 				var model = null;
 				if (m !=null)
@@ -277,14 +277,6 @@ class Instances {
 	public function render(frame : Framebuffer,m,v,p) {
 		
 		var g = frame.g4;
-		
-		// Move camera and update view matrix
-		/*var newCameraPos = cameraStart;//Matrix4.rotationY(Scheduler.time() / 4).multvec(cameraStart);
-		view = FastMatrix4.lookAt(new FastVector3(newCameraPos.x, newCameraPos.y, newCameraPos.z), // Position in World Space
-			new FastVector3(0, 0, 0), // Looks at the origin
-			new FastVector3(0, 1, 0) // Up-vector
-		);
-		*/
 		
 		var vp = FastMatrix4.identity();
 		vp = vp.multmat(p);
