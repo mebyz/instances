@@ -1,4 +1,4 @@
-#version 320 es
+#version 450
 precision mediump float;
 
 // Input vertex data, different for all executions of this shader
