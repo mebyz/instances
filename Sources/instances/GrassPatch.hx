@@ -1,5 +1,6 @@
 package instances;
 
+import kha.math.FastMatrix4;
 import kha.math.Matrix4;
 import kha.math.Vector3;
 import kha.Scheduler;
@@ -13,8 +14,8 @@ class GrassPatch {
 		this.position = position;
 	}
 	
-	public function getModelMatrix() : Matrix4 {
-		return Matrix4.translation(position.x, position.y+yOffset, position.z);
+	public function getModelMatrix() : FastMatrix4 {
+		return FastMatrix4.translation(position.x, position.y+yOffset, position.z);
 	}
 	
 	public function update() {

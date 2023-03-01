@@ -37,7 +37,7 @@ class Instances {
 	
 	var mvpID:ConstantLocation;
 
-	var ins : Array<Dynamic>;
+	var ins : Array<GrassPatch>;
 	
 	var vertexBuffers: Array<VertexBuffer>;
 	var indexBuffer: IndexBuffer;
@@ -50,14 +50,14 @@ class Instances {
 		instancesX = iX;
 		instancesZ = iZ;
 		// Initialize data, not relevant for rendering
-		ins = new Array<Dynamic>();
+		ins = new Array<GrassPatch>();
 		for (x in 0...instancesX) {
 			for (z in 0...instancesZ) {
 				// Span x/z grid, center on 0/0
 				var pos = new Vector3(x - (instancesX - 1) / 2, 0, z - (instancesZ - 1) / 2);
 				switch (type) {
-					case 'cylinder':
-						ins.push(new Cylinder(pos));
+					//case 'cylinder':
+					//	ins.push(new Cylinder(pos));
 					case 'grass' :
 						ins.push(new GrassPatch(pos));
 				}
@@ -331,6 +331,7 @@ class Instances {
 
 	public function updateAll() {
 		for (i in 0...ins.length) {
+			//trace(ins[i]);
 			ins[i].update();
 		}
 	}
