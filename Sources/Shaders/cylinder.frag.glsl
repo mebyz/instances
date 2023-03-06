@@ -1,8 +1,9 @@
 #version 450
 precision mediump float;
 
-//out vec3 fragmentColor;
+in vec4 fragmentColor;
+out vec4 outColor;
 
 void main() {
-	/*gl_FragColor = vec4(fragmentColor, 1.0);*/
+	outColor = fragmentColor;
 }

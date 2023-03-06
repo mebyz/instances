@@ -15,9 +15,9 @@ class CylinderMesh {
 	
 	public function new(sections : Int) {
 		// Radius
-		var r : Float = 0.5;
+		var r : Float = 50;
 		// Height
-		var h : Float = 1;
+		var h : Float = 10000;
 		
 		vertices = new Array<Float>();
 		indices = new Array<Int>();

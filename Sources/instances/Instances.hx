@@ -37,7 +37,7 @@ class Instances {
 	
 	var mvpID:ConstantLocation;
 
-	var ins : Array<GrassPatch>;
+	var ins : Array<Cylinder>;
 	
 	var vertexBuffers: Array<VertexBuffer>;
 	var indexBuffer: IndexBuffer;
@@ -50,25 +50,25 @@ class Instances {
 		instancesX = iX;
 		instancesZ = iZ;
 		// Initialize data, not relevant for rendering
-		ins = new Array<GrassPatch>();
+		ins = new Array<Cylinder>();
 		for (x in 0...instancesX) {
 			for (z in 0...instancesZ) {
 				// Span x/z grid, center on 0/0
 				var pos = new Vector3(x - (instancesX - 1) / 2, 0, z - (instancesZ - 1) / 2);
 				switch (type) {
-					//case 'cylinder':
-					//	ins.push(new Cylinder(pos));
-					case 'grass' :
-						ins.push(new GrassPatch(pos));
+					case 'cylinder':
+						ins.push(new Cylinder(pos));
+					//case 'grass' :
+					//	ins.push(new GrassPatch(pos));
 				}
 			}
 		}
 	}
 
-	public function createMesh(type : String) : Dynamic {
+	public function createMesh(type : String) : CylinderMesh {
 		return switch (type) {
 			case 'cylinder': new CylinderMesh(32);
-			case 'grass' : new GrassMesh();
+			//case 'grass' : new GrassMesh();
 			case _: null;
 		}
 	}
@@ -87,7 +87,7 @@ class Instances {
 
 	}
 
-	public function fillStructure(mesh : Dynamic) :  Array<VertexStructure> {
+	public function fillStructure(mesh : CylinderMesh) :  Array<VertexStructure> {
 	
 		var structures = new Array<VertexStructure>();
 		
@@ -234,7 +234,7 @@ class Instances {
 		else
 			projection = FastMatrix4.perspectiveProjection(45.0, 4.0 / 3.0, 0.1, 100.0);
 		
-		var mesh:Dynamic = createMesh(type);
+		var mesh:CylinderMesh = createMesh(type);
 		
 		
 		switch (type) {
@@ -243,14 +243,8 @@ class Instances {
 				var v = Shaders.cylinder_vert;				
 				var structures = fillStructure(mesh);
 				setupPipeline(structures, f, v);
-			}
-			case 'grass': {
-				var f =  Shaders.cylinder_frag;
-				var v = Shaders.cylinder_vert;				
-				var structures = fillStructure2(mesh);
-				setupPipeline(structures, f, v);
-				//mvpID = pipeline.getConstantLocation("MVP");
-
+				mvpID = pipeline.getConstantLocation("MVP");
+				//trace(mvpID);
 				var model = null;
 				if (m !=null)
 					model= m;
@@ -269,6 +263,32 @@ class Instances {
 					mvp2 = mvp2.multmat(model);
 
 			}
+			/*case 'grass': {
+				var f =  Shaders.cylinder_frag;
+				var v = Shaders.cylinder_vert;				
+				//trace(v);
+				var structures = fillStructure2(mesh);
+				setupPipeline(structures, f, v);
+				mvpID = pipeline.getConstantLocation("MVP");
+				//trace(mvpID);
+				var model = null;
+				if (m !=null)
+					model= m;
+				else
+					model = FastMatrix4.identity();
+
+				if (vv !=null)
+					view= vv;
+
+				mvp2 = FastMatrix4.identity();
+				if (projection !=null)
+					mvp2 = mvp2.multmat(projection);
+				if (view !=null)
+					mvp2 = mvp2.multmat(view);
+				if (model !=null)
+					mvp2 = mvp2.multmat(model);
+
+			}*/
 			case _: null;
 		}
 
@@ -320,13 +340,19 @@ class Instances {
 		
 		// Instanced rendering
 		if (mvpID!=null) {
+			/*trace(vertexBuffers);
+			trace(indexBuffer);
+			trace(ins.length);*/
+			//trace(mvp);
 			g.setVertexBuffers(vertexBuffers);
 			g.setIndexBuffer(indexBuffer);
 			g.setMatrix(mvpID, mvp2);
 			g.drawIndexedVerticesInstanced(ins.length);
+			//g.drawIndexedVertices(0,1);
+			//g.drawIndexedVerticesInstanced(ins.length);
 		}
 		
-		g.end();			
+		g.end();		
 	}
 
 	public function updateAll() {

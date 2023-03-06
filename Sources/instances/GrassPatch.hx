@@ -5,7 +5,7 @@ import kha.math.Matrix4;
 import kha.math.Vector3;
 import kha.Scheduler;
 
-class GrassPatch {
+class GrassPatch2 {
 	
 	private var yOffset : Float;
 	private var position : Vector3;
