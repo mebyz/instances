@@ -348,8 +348,6 @@ class Instances {
 			g.setIndexBuffer(indexBuffer);
 			g.setMatrix(mvpID, mvp2);
 			g.drawIndexedVerticesInstanced(ins.length);
-			//g.drawIndexedVertices(0,1);
-			//g.drawIndexedVerticesInstanced(ins.length);
 		}
 		
 		g.end();		
@@ -357,7 +355,6 @@ class Instances {
 
 	public function updateAll() {
 		for (i in 0...ins.length) {
-			//trace(ins[i]);
 			ins[i].update();
 		}
 	}

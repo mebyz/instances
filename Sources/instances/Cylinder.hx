@@ -11,7 +11,7 @@ import kha.Scheduler;
 
 class Cylinder {
 	
-	private var yOffset : Float;
+	private var offset : Float;
 	private var position : Vector3;
 	
 	public function new(position : Vector3) {
@@ -19,10 +19,10 @@ class Cylinder {
 	}
 	
 	public function getModelMatrix() : FastMatrix4 {
-		return FastMatrix4.translation(position.x, position.y + yOffset, position.z);
+		return FastMatrix4.translation(position.x* offset, position.y , position.z* offset);
 	}
 	
 	public function update() {
-		yOffset = Math.sin(position.x * 4 + position.z + Scheduler.time() * 2) / 4;
+		offset = Math.sin(position.x * 40 + position.z * 40 + Scheduler.time() * 2) *100;
 	}
 }

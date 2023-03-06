@@ -17,7 +17,7 @@ class CylinderMesh {
 		// Radius
 		var r : Float = 50;
 		// Height
-		var h : Float = 10000;
+		var h : Float = 1000;
 		
 		vertices = new Array<Float>();
 		indices = new Array<Int>();
