@@ -19,10 +19,10 @@ class Cylinder {
 	}
 	
 	public function getModelMatrix() : FastMatrix4 {
-		return FastMatrix4.translation(position.x* offset, position.y , position.z* offset);
+		return FastMatrix4.translation(position.x, position.y+100 , position.z);
 	}
 	
 	public function update() {
-		offset = Math.sin(position.x * 40 + position.z * 40 + Scheduler.time() * 2) *100;
+		offset = Math.sin(position.x + position.z + Scheduler.time());
 	}
 }

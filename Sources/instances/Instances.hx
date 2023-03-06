@@ -54,7 +54,7 @@ class Instances {
 		for (x in 0...instancesX) {
 			for (z in 0...instancesZ) {
 				// Span x/z grid, center on 0/0
-				var pos = new Vector3(x - (instancesX - 1) / 2, 0, z - (instancesZ - 1) / 2);
+				var pos = new Vector3((x - Math.random()*(instancesX - 1) / 2)*10, 0, (z - Math.random()*(instancesZ - 1) / 2)*10);
 				switch (type) {
 					case 'cylinder':
 						ins.push(new Cylinder(pos));
@@ -67,7 +67,7 @@ class Instances {
 
 	public function createMesh(type : String) : CylinderMesh {
 		return switch (type) {
-			case 'cylinder': new CylinderMesh(32);
+			case 'cylinder': new CylinderMesh(3);
 			//case 'grass' : new GrassMesh();
 			case _: null;
 		}
@@ -133,9 +133,9 @@ class Instances {
 		
 		var oData = vertexBuffers[1].lock();
 		for (i in 0...ins.length) {
-			oData.set(i * 3, 1);
-			oData.set(i * 3 + 1, 0.75 + Random.getIn(-100, 100) / 500);
-			oData.set(i * 3 + 2, 0);
+			oData.set(i * 3, 0);
+			oData.set(i * 3 + 1, 0.5 + Random.getIn(-100, 100) / 500);
+			oData.set(i * 3 + 2, 0.25 + Random.getIn(-100, 100) / 500);
 		}
 		vertexBuffers[1].unlock();
 		

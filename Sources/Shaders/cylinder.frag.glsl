@@ -1,5 +1,5 @@
 #version 450
-precision mediump float;
+precision highp float;
 
 in vec4 fragmentColor;
 out vec4 outColor;

@@ -1,5 +1,5 @@
 #version 450
-precision mediump float;
+precision highp float;
 
 // Input vertex data, different for all executions of this shader
 in vec3 pos;
