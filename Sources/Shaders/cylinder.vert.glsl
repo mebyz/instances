@@ -11,8 +11,10 @@ in vec3 col;
 
 // Output data - will be interpolated for each fragment
 out vec4 fragmentColor;
+out vec4 fragmentPosition;
 
 void main() {
 	fragmentColor = vec4(col,1.0);
-	gl_Position = m * vec4(pos, 1.0);
+	gl_Position = m * vec4(pos * 20.0, 1.0);
+	fragmentPosition = gl_Position;
 }

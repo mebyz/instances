@@ -54,7 +54,7 @@ class Instances {
 		for (x in 0...instancesX) {
 			for (z in 0...instancesZ) {
 				// Span x/z grid, center on 0/0
-				var pos = new Vector3((x - Math.random()*(instancesX - 1) / 2)*10, 0, (z - Math.random()*(instancesZ - 1) / 2)*10);
+				var pos = new Vector3((x - Math.random()*(instancesX - 1) / 2)*100, 0, (z - Math.random()*(instancesZ - 1) / 2)*100);
 				switch (type) {
 					case 'cylinder':
 						ins.push(new Cylinder(pos));
@@ -65,9 +65,9 @@ class Instances {
 		}
 	}
 
-	public function createMesh(type : String) : CylinderMesh {
+	public function createMesh(type : String) : TreeMesh {
 		return switch (type) {
-			case 'cylinder': new CylinderMesh(3);
+			case 'cylinder': new TreeMesh();
 			//case 'grass' : new GrassMesh();
 			case _: null;
 		}
@@ -87,7 +87,7 @@ class Instances {
 
 	}
 
-	public function fillStructure(mesh : CylinderMesh) :  Array<VertexStructure> {
+	public function fillStructure(mesh : TreeMesh) :  Array<VertexStructure> {
 	
 		var structures = new Array<VertexStructure>();
 		
@@ -133,9 +133,9 @@ class Instances {
 		
 		var oData = vertexBuffers[1].lock();
 		for (i in 0...ins.length) {
-			oData.set(i * 3, 0);
-			oData.set(i * 3 + 1, 0.5 + Random.getIn(-100, 100) / 500);
-			oData.set(i * 3 + 2, 0.25 + Random.getIn(-100, 100) / 500);
+			oData.set(i * 3, 0.5);
+			oData.set(i * 3 + 1, 0.3 + Random.getIn(-100, 100) / 500);
+			oData.set(i * 3 + 2, 0.1 + Random.getIn(-100, 100) / 500);
 		}
 		vertexBuffers[1].unlock();
 		
@@ -205,9 +205,9 @@ class Instances {
 		
 		var oData = vertexBuffers[1].lock();
 		for (i in 0...ins.length) {
-			oData.set(i * 3, 0.3);
-			oData.set(i * 3 + 1, 0.75 + Random.getIn(-100, 100) / 500);
-			oData.set(i * 3 + 2, 0.3);
+			oData.set(i * 3, 0.5);
+			oData.set(i * 3 + 1, 0.3 + Random.getIn(-100, 100) / 500);
+			oData.set(i * 3 + 2, 0.1);
 		}
 		vertexBuffers[1].unlock();
 		
@@ -234,7 +234,7 @@ class Instances {
 		else
 			projection = FastMatrix4.perspectiveProjection(45.0, 4.0 / 3.0, 0.1, 100.0);
 		
-		var mesh:CylinderMesh = createMesh(type);
+		var mesh:TreeMesh = createMesh(type);
 		
 		
 		switch (type) {

@@ -94,7 +94,7 @@ class CylinderMesh {
 		/*var obj = new ObjLoader(Assets.blobs.grass_obj.toString());
 		
 		vertices = obj.data;
-		indices = obj.ind!ices;
+		indices = obj.indices;
 		return;*/
 
 		// Radius
